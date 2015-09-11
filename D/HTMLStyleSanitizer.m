@@ -22,7 +22,7 @@
 
 - (instancetype)init {
     self = [super init];
-
+    
     self.allowablecsslist1 = [self regexesForPatterns:@[@"(\\w\\/\\/)", @"(\\w\\/\\/*\\*)", @"(\\/\\*\\/)"]];
     self.allowablecsslist2 = [self regexesForPatterns:@[@"(eval|cookie|\bwindow\b|\bparent\b|\bthis\b)", //suspicious javascript-type words
                                                         @"behaviou?r|expression|moz-binding|@import|@charset|(java|vb)?script|[\\<]|\\\\\\w", @"[\\<>]", // back slash, html tags,
@@ -33,7 +33,7 @@
     
     self.replaceRegex1 = [self regexeForPattern:@"(\\/\\*.*?\\*\\/)"];
     self.replaceRegex2 = [self regexeForPattern:@"\\n\\s\\s+"];
-
+    
     return self;
 }
 
@@ -50,17 +50,23 @@
     
     NSInteger textLen = 0;
     for (NSString *component in components) {
+        
+//        NSLog(@"%@", component);
         textLen += component.length;
         
-        NSString *splitter = [input substringWithRange:NSMakeRange(textLen, 1)];
+        NSString *splitter = @"";
         
-        if ([splitter isEqualToString:@"}"]) {
-            splitter = @"";
-        } else {
-            textLen = textLen + 1;
+        if (textLen < input.length) {
+            splitter = [input substringWithRange:NSMakeRange(textLen, 1)];
+            if (splitter && [splitter isEqualToString:@"}"]) {
+                textLen = textLen + 1;
+            } else {
+                splitter = @"";
+            }
         }
+        
         NSString *object = [component stringByAppendingString:splitter];
-//        object = stripNULs(object)
+        //        object = stripNULs(object)
         NSString *escapedText = [object stringByRemovingPercentEncoding];
         if (escapedText == nil) {
             escapedText = object;
@@ -81,6 +87,11 @@
             NSString *ttext = [@" " stringByAppendingString:escapedText];
             [output appendString:ttext];
         }
+    }
+
+    // remove leading closing brances with out open
+    while ([output hasPrefix:@"}"]) {
+        [output deleteCharactersInRange:NSMakeRange(0, 1)];
     }
     
     return output;
@@ -105,7 +116,7 @@
     
     [self.replaceRegex1 replaceMatchesInString:input options:0 range:NSMakeRange(0, input.length) withTemplate:@""];
     [input replaceOccurrencesOfString:@"\n" withString:@"" options:NSCaseInsensitiveSearch range:NSMakeRange(0, input.length)];
-
+    
     for (NSRegularExpression *regex in self.allowablecsslist2) {
         
         NSRange range = [regex rangeOfFirstMatchInString:input options:0 range:NSMakeRange(0, input.length)];
@@ -115,7 +126,7 @@
             return;
         }
     }
-
+    
     // This is done to remove any unnecessary spaces and newlines in the
     // inline CSS styles. Test case: Uber ride receipt
     [self.replaceRegex2 replaceMatchesInString:input options:0 range:NSMakeRange(0, input.length) withTemplate:@" "];
