@@ -408,6 +408,8 @@
 			<string>1</string>
 			<key>script</key>
 			<string>1</string>
+            <key>style</key>
+            <string>1</string>
 		</dict>
 		<key>Core.Language</key>
 		<string>en</string>
@@ -722,6 +724,8 @@
 		<dict>
 			<key>script</key>
 			<string>1</string>
+            <key>style</key>
+            <string>1</string>
 		</dict>
 		<key>Core.Language</key>
 		<string>en</string>

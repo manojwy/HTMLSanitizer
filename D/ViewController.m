@@ -77,19 +77,19 @@
 
 - (void) testCompleteHTMLWithStyle {
     
-    NSString * html = @"<html><head><style type=\"text/css\">.div{color:blue;}</style></head><body><div>Test</div></body></html>";
+    NSString * html = @"<html><head><style type=\"text/css\">.div{color:blue;}</style></head><body><div>Test</div><style type=\"text/css\">.div{color:blue;}</style></body></html>";
     
-    NSString * body;
+    NSMutableString * body;
     NSString * style;
     NSMutableString * result = [[NSMutableString alloc] init];
     
     NSRange range = [html rangeOfString:@"<body" options:NSCaseInsensitiveSearch];
     
     if (range.location == NSNotFound) {
-        body = html;
+        body = html.mutableCopy;
         style = @"";
     } else {
-        body = [html substringFromIndex:range.location];
+        body = [html substringFromIndex:range.location].mutableCopy;
         style = [html substringToIndex:range.location];
     }
     
@@ -128,6 +128,9 @@
     }
     
     if (body.length > 0) {
+        NSError * error;
+        NSRegularExpression *regex = [[NSRegularExpression alloc] initWithPattern:@"<style.*?<\\/style>" options:NSRegularExpressionCaseInsensitive error:&error];
+        [regex replaceMatchesInString:body options:0 range:NSMakeRange(0, body.length) withTemplate:@""];
         NSString* html = [HTMLPurifier cleanHTML:body];
         [result appendString:html];
     }
