@@ -8,6 +8,8 @@
 
 #import "ViewController.h"
 #import "HTMLPurifier.h"
+#import "HTMLPurifier_Config.h"
+#import "HTMLPurifier_Context.h"
 
 @interface ViewController ()
 
@@ -34,11 +36,41 @@
 //            testHTML = @"<html><head><style>.mycss{color:red;}</style></head><body><div class='mycss' style='color:#ff00ff;' yahoo>Suhas</div></body></html>";
            testHTML = @"<style>.mycss{color:red;}</style><div class='mycss' style='color:#ff00ff;' yahoo>Suhas</div>";
     
+    testHTML = @"<style>body {color:#F00;}</style> Some text";
+    
+//    NSString* cleanedHTML = [HTMLPurifier cleanHTML:testHTML];
     
     
-    NSString* cleanedHTML = [HTMLPurifier cleanHTML:testHTML];
+    
+    
+    HTMLPurifier_Config *config = [HTMLPurifier_Config createDefault];
+    
+    
+    NSLog(@"%@", [config get:@"Filter.ExtractStyleBlocks"]);
+    
+    
+    
+//    [config setValue:@"1" forKey:@"ExtractStyleBlocks"];
+//         [config setString:@"Filter.ExtractStyleBlocks" object:@"1"];
+    
+        NSLog(@"%@", [config get:@"Filter.ExtractStyleBlocks"]);
+    
+    HTMLPurifier* purifier = [[HTMLPurifier alloc] initWithConfig:config];
+    NSString * cleanedHTML = [purifier purify:testHTML];
+    
     
     NSLog(@"Output: %@", cleanedHTML);
+    
+    
+            NSMutableArray *cxArray = (NSMutableArray*)purifier.context;
+            HTMLPurifier_Context *cx = cxArray[0];
+    
+            NSLog(@"%@", [cx getWithName:@"StyleBlocks"]);
+    
+
+    
+    
+    
     
 }
 

@@ -31,6 +31,7 @@
         self.name = @"Text";
         self.content_sets = [@{@"Flow":@"Heading | Block | Inline"} mutableCopy];
 
+        [self addElement:@"style" type:@"Inline" contents:@"Inline" attrIncludes:@"Common" attr:nil];
         [self addElement:@"abbr" type:@"Inline" contents:@"Inline" attrIncludes:@"Common" attr:nil];
         [self addElement:@"acronym" type:@"Inline" contents:@"Inline" attrIncludes:@"Common" attr:nil];
         [self addElement:@"cite" type:@"Inline" contents:@"Inline" attrIncludes:@"Common" attr:nil];
